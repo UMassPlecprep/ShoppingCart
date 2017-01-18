@@ -1,0 +1,109 @@
+from oauth2client.service_account import ServiceAccountCredentials
+from apiclient import discovery
+import datetime, os, httplib2, json
+from util_functions import extractDate, date_only_numbers, datetimeDateConv
+scopes = ['https://www.googleapis.com/auth/calendar']
+credentials = ServiceAccountCredentials.from_json_keyfile_name('/home/ubuntu/plecprepShoppingCart/keys.json',scopes=scopes)
+
+# Google date structure:
+# %Y-%m-%dT%H:%M:%S-05:00
+# Summary format: [name]  [room]  [class] (notice double spaces)
+def findEvent(summary,start):
+    print "Searching for event....", summary
+    print "Starting on............", start
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar','v3',http=http)
+    result = service.events().list(calendarId='certl@umass.edu',timeMin=start,singleEvents=True, maxResults=2500).execute()
+    events = result.get('items',[])
+    for event in events:
+        eventStart = event['start'].get('dateTime',event['start'].get('date'))
+        if str(eventStart) == start and str(event['summary']) == summary:
+            print "Found:\n\tSummary: ", event['summary']
+            return str(event['id'])
+    print "Event not found in\n"
+    return 'Not found'
+
+# demos will be a csv
+def addEvent(prof,room,date,demos,start,end,isAstroClass):
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar','v3',http=http)
+    summary = prof + '  ' + room
+    result  = findEvent(summary,start)
+    description = ""
+    for string in demos.split(','):
+        description += '-' + string + '\n'
+    if result != 'Not found':
+        print "Updating"
+        event = service.events().get(calendarId='certl@umass.edu',eventId=result).execute()
+        summary = summary
+        event['summary'] = summary
+        event['location']= demos
+        event['colorId'] = 10 + isAstroClass
+        event['description'] = description
+        print event
+        service.events().update(calendarId='certl@umass.edu',eventId=result,body=event).execute()
+        print "Done"
+# color id 11 = red
+# color id 10 = green
+
+    else:
+        print "Creating..."
+        event = {
+            'colorId':10+isAstroClass, # Physics is green (10) by default
+                                       # if astro, add 1 (11)
+            'summary':summary,
+            'location':demos,
+            'description':description,
+            'start':{
+                'dateTime':start },
+            'end':{
+                'dateTime':end }
+        }
+        createEvent(event)
+        print "Created"
+    return           
+    
+def createEvent(event):
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar','v3',http=http)
+    event = service.events().insert(calendarId='certl@umass.edu',body=event).execute()
+    print 'Event created: %s' %(event.get('htmlLink'))
+
+def createSchedule(semester_start, semester_end):
+    print '\nCreating Event\n\n'
+    data = json.load(open('config/prof-schedule.json'))
+    # Initialize event w/ params that don't change
+    event = {
+        'location':''
+    }
+    # for every class for every professor:
+    for prof in data:
+        classes = data[prof]
+        for c in classes:
+            class_pointer = classes[c]
+            # Find start/end TIMES (NOT start/end semester dates)
+            start, end, date = extractDate(' date: '+semester_start,prof,c)
+            until, ignore, ignore2 = extractDate(' date: '+semester_end,prof,c)
+            until = date_only_numbers(until)
+            d = ''
+            days = class_pointer["days"]
+
+            # Format days into a list:
+            for day in days[:-1]: # 
+                d += day+","      # [1,2,3] --> "1,2,3"
+            d += days[-1]         #
+            # Sets the correct start date from beginning of semester
+            class_start = datetimeDateConv(start,class_pointer['days'])
+            class_end   = datetimeDateConv(end,class_pointer['days'])
+
+            # Build the event
+            event['summary'] = prof.capitalize() + '  ' + class_pointer["room"]+'  '+c
+            event['start'] = {'dateTime':class_start,'timeZone':'America/New_York'}
+            event['end'] = {'dateTime':class_end,'timeZone':'America/New_York'}
+            event['recurrence'] = ['RRULE:FREQ=WEEKLY;UNTIL='+until+';BYDAY='+d]
+
+            # Prevent duplicating events
+            exists = findEvent( event['summary'], event['start']['dateTime'] )
+            if exists == 'Not found':
+                createEvent(event)
+    return

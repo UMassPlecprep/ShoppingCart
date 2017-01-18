@@ -1,0 +1,254 @@
+<html>
+<head>
+  <link rel=stylesheet href={{ url_for('static', filename='style.css') }}>
+  <link rel=stylesheet href='static/codebase/dhtmlxcalendar.css'>
+  <script src='static/codebase/dhtmlxcalendar.js'></script>
+</head>
+
+<body>
+    <div class=content>
+    <h1 style="margin-top: 100px">Backend Updater</h1>
+    <p>Use this page to update the configurations for professors, the semester schedule, classes, and more.</p>
+    <p>Hover over an option to see what you can edit through that section</p>
+    <!-- Main menu -->
+        <div class=options>
+          <div>
+            <button class=option-button onclick=edit_prof_list()>Edit professor list</button>
+            <p class=button-text>Here you may add/remove professors from the server's database.  Changing the professor list will change who is available to choose from when creating a schedule as well as who may request demos.</p>
+          </div>
+          <div>
+            <button class=option-button onclick=edit_schedule()>Edit schedule</button>
+            <p class=button-text>Here you may edit the schedule for the current semester.  This schedule is used when authenticating a professor's request for a demo as well as updating the lecture prep Google Cal.</p>
+          </div>
+          <div>
+            <button class=option-button onclick=edit_util()>Edit configs</button>
+            <p class=button-text>Here you may configure odds and ends of this config service.  The full list of choices are adding/removing: classes, class time slots, and class rooms.  You may also generate the Google Cal events for each class form this page.</p>
+          </div>
+        </div>
+        <div class=edit_professor_list id=professor_beginning>
+        <!-- Edit professors -->
+            <h1>Edit active professors here</h1>
+            <h2>Current professors:</h2>
+            <table class=prof-table><tbody>
+                <tr>
+            {% set counter = 0 %}
+            {% for prof in profs %}
+            {% if counter >= 4 %}
+                </tr>
+                <tr>
+                    <td class=prof-table-td>{{prof}}</td>
+            {% set counter = 0 %}
+            {% else %}
+                    <td class=prof-table-td>{{prof}}</td>
+            {% endif %}
+            {% set counter = counter + 1 %}
+            {% endfor %}
+            </tr>
+            </tbody></table>
+            <!--<button class="button submit" onclick=show_add_prof()>Add professor</button>
+            <button class="button remove" onclick=show_remove_prof()>Remove professor</button>-->
+            <div class=remove_prof_wrapper>
+                <h3>Select the professor to remove</h3>
+                <form action="/removeProf" method="POST">
+                    <select name=professor>
+                        <option disabled selected>...</option>
+                        {% for prof in profs %}
+                        <option>{{ prof }}</option>
+                        {% endfor %}
+                    </select><br>
+                    <button type=submit class="button remove" name=Remove>Remove</button>
+                </form>
+            </div>
+            <div class=add_prof_wrapper>
+                <h3>Who would you like to add</h3>
+                <p>Any casing (e.g.: hatch, Hatch, hAtCh, etc.)
+                <form action="/addProf" method="POST">
+                    <input name=professor></input><br>
+                    <button class="button submit" type=submit>Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class=edit_schedule id=schedule_beginning>
+            <div class=remove_class_wrapper>
+              <h1>Current active classes</h1>
+              <h2>Click on a class to select it</h2>
+                <table class=sched-table><tbody>
+                    <th>Class</td>
+                    <th>Prof</td>
+                    <th>Start-End times</td>
+                    <th>Days</td>
+                    <th>Room</td>
+                {% for p in active %}
+                {% for c in active[p] %}
+                <tr class={{c}} onclick=remove_class(["{{p.lower()}}","{{c}}"])>
+                    <td class=scehd-table-td>{{ c }}</td>
+                    <td class=sched-table-td>{{ p.capitalize() }}</td>
+                    <td class=sched-table-td>{{ active[p][c]["start"][0] }}:{{ active[p][c]["start"][1]}}-{{ active[p][c]["end"][0] }}:{{ active[p][c]["end"][1] }}</td>
+                    <td class=sched-table-td>{{ active[p][c]["days"] }}</td>
+                    <td class=sched-table-td>{{ active[p][c]["room"] }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+                </tbody></table><br>
+                <button onclick=purge() class="button remove">Remove</button>
+                <form method='POST' action='/purgeSchedule'>
+                    <button type=submit class="button submit">Purge list</button>
+                </form>
+            </div>
+          <div class=add_schedule_wrapper>
+            <h1>Create an active class</h1>
+            <h2>Enter the info below</h2>
+            <p>* denotes a required field</p>
+            <form action="/addSchedule" method="POST">
+                <h3>Days the class meets *</h3>
+                {% for day in days %}
+                <input type=checkbox name={{day}}>{{day}}</input>
+                {% endfor %}
+                <h3>Starting/Ending times *</h3>
+                <select name=time required>
+                    <option disabled selected>...</option>
+                    {% for time in times %}
+                    <option>{{time}}</option>
+                    {% endfor %}
+                </select><br>
+                <h3>Professor *</h3>
+                <select name=professor required>
+                    <option disabled selected>...</option>
+                    {% for prof in profs %}
+                    <option>{{ prof }}</option>
+                    {% endfor %}
+                </select><br>
+                <h3>Room number *</h3>
+                <select name=room required>
+                    <option disabled selected>...</option>
+                    {% for room in rooms %}
+                    <option>{{ room }}</option>
+                    {% endfor %}
+                </select><br>
+                <h3>Class *</h3>
+                <select name=class required>
+                    <option disabled selected>...</option>
+                    {% for c in classes %}
+                    <option>{{ c }}</option>
+                    {% endfor %}
+                </select><br>
+                <h3>Section</h3>
+                <p>Not always needed</p>
+                <select name=section>
+                    <option></option>
+                    {% for i in range(1,10) %}
+                    <option>{{ i }}</option>
+                    {% endfor %}
+                </select><br>
+                <button class="button submit" type=submit>Add class</button>
+            </form>
+          </div>
+        </div>
+        <div class=edit_utils id=util_beginning>
+            <h1>Edit configuration things here</h1>
+            <h2>Add a room</h2>
+            <p>Building + Number (ILC S110, Has 134, etc.)
+            <form method="POST" action="/addRoom">
+            <input name=room></input><br>
+            <button type=submit class="submit button">Add</button>
+            </form>
+            <h2>Remove a room</h2>
+            <form method="POST" action="/removeRoom">
+            <select name=room>
+                <option disabled selected>...</option>
+                {% for room in rooms %}
+                <option>{{room}}</option>
+                {% endfor %}
+            </select><br>
+            <button type=submit class="button remove">Remove</button>
+            </form>
+            <h2>Add class</h2>
+            <p>Class type + Number + -Section# <br>( e.g.: Physics 131 Section 1 will be entered as P131-1, Physics 100 with no section will be entered as P100 )</p>
+            <form method="POST" action="/addClass">
+            <input name=class></input><br>
+            <button type=submit class="submit button">Add</button>
+            </form>
+            <h2>Remove class</h2>
+            <form method="POST" action="/removeClass">
+            <select name=class>
+                <option disabled selected>...</option>
+                {% for c in classes %}
+                <option>{{c}}</option>
+                {% endfor %}
+            </select><br>
+            <button type=submit class="button remove">Remove</button>
+            </form>
+            <form method="POST" action="/addTime">
+                <h2>Add start/end times</h2>
+                <p>The meridian is with respect to the STARTING TIME <br>(e.g.: 11:15 AM - 12:05 PM will be entered as: 11:15 AM - 12:05)</p>
+                <h3>
+                <select name=start_hour>
+                    {% for i in range(1,13) %}
+                    {% if i == 8 %}
+                    <option selected>{{ i }}</option>
+                    {% else %}
+                    <option>{{ i }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select><span class=time-format>:</span>
+                <select name=start_min>
+                    {% for i in range(0,60,5) %}
+                    {% if i < 10 %}
+                    <option>0{{ i }}</option>
+                    {% else %}
+                    <option>{{i}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <select name=meridian>
+                    <option>AM</option>
+                    <option>PM</option>
+                </select><span class=time-format style="margin:0px 20px">-</span>
+                <select name=end_hour>
+                    {% for i in range(1,13) %}
+                    {% if i == 8 %}
+                    <option selected>{{ i }}</option>
+                    {% else %}
+                    <option>{{ i }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select><span class=time-format>:</span>
+                <select name=end_min>
+                    {% for i in range(0,60,5) %}
+                    {% if i < 10 %}
+                    <option>0{{ i }}</option>
+                    {% else %}
+                    <option>{{i}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                </h3><br>
+                <button type=submit class="submit button">Add</button>
+            </form>
+            <form method='POST' action='/removeTime'>
+                <h2>Remove start/end times</h2>
+                <select name=time>
+                    <option selected disabled>...</option>
+                    {% for time in times %}
+                    <option>{{ time }}</option>
+                    {% endfor %}
+                </select>
+                <button type=submit class="button remove">Remove</button>
+            </form>
+                    
+            <form method="POST" action="/addGoogleSched">
+            <div id=cal_wrapper>
+                <h2>Generate Class Events</h2>
+                <h3>Enter the starting/ending dates of the coming semester</h3>
+                <p><i>Note: </i>the server prevents class duplication</p><br>
+                <input type=text id=starting_cal name=starting placeholder="Starting date">
+                <input type=text id=ending_cal name=ending placeholder="Ending date"><br>
+            <button type=submit class="submit button">Generate</button>
+            </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src={{url_for('static',filename='script.js')}}></script>
+</body>
+</html>
