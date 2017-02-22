@@ -1,0 +1,6 @@
+- two ball drop 1D60.20
+- airtrack 1N30.20/1N30.33
+- rocket wagon 1N22.10
+- rotating platform +weights 1Q40.10
+- suicide pendulum 1M40.10
+- cons of E tracks 1M40.33a+b  - 

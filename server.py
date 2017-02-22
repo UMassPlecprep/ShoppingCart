@@ -1,23 +1,30 @@
 from flask import Flask,request,redirect, json, render_template, url_for
-import os, sys, datetime,random
+import os, sys, random
 import util_functions as util
+import mailEvent as mail
+from datetime import datetime
 from googleEvent import addEvent, createSchedule
 from flask_cors import cross_origin
+from threading import Timer
+import logging
+import test
 
 # Constants
 app = Flask(__name__)
-baseURL = '/home/ubuntu/testing/'
+baseURL = '/home/ubuntu/plecprepShoppingCart/'
 days = ['MO','TU','WE','TH','FR']
 config = json.load(open('config/config.json'))
 rooms = config['rooms']
 classes = config['classes']
 times = config['times']
 profs = [row.strip('\n') for row in open('config/names.txt')]
+logging.basicConfig(format='%(message)s', filename=baseURL + 'errors.log')
+l = logging.getLogger('log')
 
 @app.route('/getClasses', methods=['POST'])
 @cross_origin()
 def getClasses():
-    print request.data
+    #print request.data
     data = json.load(open('config/prof-schedule.json'))
     prof = request.data.lower()
     classes = data[prof].keys()
@@ -35,36 +42,40 @@ def sendConfig():
 @cross_origin()
 def shopping_cart():
     data = request.data
-    print data
+    #print data
     if data.find(' Physics Department') >= 0:
         demo = util.extractDemo(data)
         prof = util.extractProf(data)
         code = util.extractCode(data)
         start, end, date = util.extractDate(data,prof,code)
         room = util.extractRoom(prof,code)
-    print ("Demo:  " + demo)
-    print ("Name:  " + prof)
-    print ("Date:  " + date)
-    print ("Code:  " + code)
-    print ("Start:  "+ start)
-    print ("End:  "  + end)
-    print ("\n\n\n")
+    #print ("Demo:  " + demo)
+    #print ("Name:  " + prof)
+    #print ("Date:  " + date)
+    #print ("Code:  " + code)
+    #print ("Start:  "+ start)
+    #print ("End:  "  + end)
+    #print ("\n\n\n")
     try:
         data_handler(demo, prof, room+'  '+code,code, start, end, date)
         return 'Good'
     except Exception as e:
-        print "Error:   ", e
+        #print "Error:   ", e
+        l.error(e)
         return 'Bad'
     return 'All good'
 
 def data_handler(demo, prof, room, code, start, end,date):
     # Setup path variables
-    pathToFile = baseURL + 'demorequests/' + prof.lower() + '/' + date + '.txt'
+    pathToFile = os.path.join(baseURL,'demorequests', prof.lower(),date + '.txt')
     demos = ""
     # If professor's directory doesn't exist, make it
     # Needed else python IOError thrown
     if not os.path.exists('demorequests/' + prof):
         os.system('mkdir demorequests/' + prof)
+    if not os.path.isfile(pathToFile):
+        os.system('touch ' + pathToFile)
+        os.system('sudo chown ubuntu ' + pathToFile)
     # Open the [date].txt file and record demo
     with open(pathToFile,'a+') as f:
         f.write(demo + '\n')
@@ -75,11 +86,39 @@ def data_handler(demo, prof, room, code, start, end,date):
     addEvent(prof.capitalize(),room,date,demos,start,end,isAstroClass)
     return
 
+############# Stupid nginx required functions
+# These methods are used to help nginx update files
+# Without them, nginx will not correctly update 
+def getProfs():
+    return [row.strip('\n') for row in open('config/names.txt')]
+    
+def getConfig():
+    return json.load(open('config/config.json'))
+
+def getRooms():
+    config = getConfig()
+    return config['rooms']
+
+def getTimes():
+    config = getConfig()
+    return config['times']
+
+def getClasses():
+    config = getConfig()
+    return config['classes']
+############ End stupid nginx required functions
+
 @app.route('/updateProfList',methods=['GET','POST'])
 def updateProfList():
-    global times, profs
+    #global times, profs
+    profs = getProfs()
+    rooms = getRooms()
+    times = getTimes()
+    config = getConfig()
+    rooms = config['rooms']
+    classes = config['classes']
+    times = config['times']
     profs.sort()
-    
     # Format classes for user in format:
     # [class] [Prof] [start]-[end] [room]
     active_classes = json.load(open('config/prof-schedule.json'))
@@ -98,15 +137,19 @@ def updateProfList():
     # classes = List of possible classes (P131, A100, etc.(
     # active = the prof-schedule.json file with some cleaning
     #       start/end in xx:yy format, days in normal format
-    return render_template("edit_prof_list.html",profs=profs,
+    try:
+        return render_template("edit_prof_list.html",profs=profs,
                            days=days,times=times,
                            classes=classes,rooms=rooms,
                            active=active_classes)
+    except Exception as e:
+        l.error(e)
 
 @app.route('/removeProf', methods=['POST'])
 def removeProf():
     global profs
-    prof = request.form['professor']
+    profs = getProfs()
+    prof = request.form['prof']
     to_remove = profs.index(prof)
     profs.pop(to_remove)
     updateProfessors()
@@ -115,6 +158,7 @@ def removeProf():
 @app.route('/addProf',methods=['POST'])
 def addProf():
     global profs
+    profs = getProfs()
     prof = request.form['professor'].capitalize()
     profs += [prof]
     updateProfessors()
@@ -122,9 +166,9 @@ def addProf():
 
 def updateProfessors():
     global profs
-    print profs
     with open('config/names.txt','w') as f:
         f.write( "\n".join(profs) )
+    profs = getProfs()
     return
 
 @app.route('/removeSchedule',methods=['POST'])
@@ -148,7 +192,7 @@ def addSchedule():
     c    = data[keys.pop(keys.index('class'))]
     room = data[keys.pop(keys.index('room'))]
     time = data[keys.pop(keys.index('time'))]
-    prof = data[keys.pop(keys.index('professor'))].lower()
+    prof = data[keys.pop(keys.index('prof'))].lower()
     sect = data[keys.pop(keys.index('section'))]
     # Sort keys by weekday and set that list to day
     d = sorted(keys,key=days.index)
@@ -167,6 +211,54 @@ def addSchedule():
         data[prof] = {c: {"start":start,"end":end,"room":room,"days":d}}
     json.dump(data,open('config/prof-schedule.json','w'))
     return redirect('/updateProfList')
+
+@app.route('/editSchedule', methods=['POST'])
+def editShedule():
+    data = dict(request.form)
+    #print data
+    sched = json.load(open('config/prof-schedule.json'))
+    original = data.pop('to_edit')[0].split()
+    keys = data.keys()
+    c = original[0]
+    prof = original[1].lower()
+    time = original[2]
+    days = []
+    room = original[4]+" "+original[5]
+    # Days
+    for key in keys:
+        if data[key][0] == 'on':
+            days += [key]
+    if len(days) == 0:
+        days = original[3]
+    sched[prof][c]['days'] = days
+    # Fix time
+    if 'time' in keys:
+        time = data['time'][0]
+        hyphen_pos = time.find('-')
+        starting_time = time[:hyphen_pos]
+        ending_time   = time[hyphen_pos+1:-3]
+        meridian = time[-3:]
+        start = util.milTimeConv(starting_time, meridian)
+        end   = util.milTimeConv(ending_time, meridian)
+        sched[prof][c]['start'] = start
+        sched[prof][c]['end']   = end
+    if 'room' in keys:
+        sched[prof][c]['room'] = data['room'][0]
+    if 'class' in keys:
+        popped = sched[prof].pop(c)
+        c = data['class'][0]
+        sched[prof][c] = popped
+    if 'prof' in keys:
+        to_add = sched[prof].pop(c)
+        prof_ = data['prof'][0].lower()
+        try:
+            sched[prof_][c] = to_add
+        except KeyError:
+            sched[prof_] = {c:to_add}
+    if len(sched[prof]) == 0:
+        sched.pop(prof)
+    json.dump(sched, open('config/prof-schedule.json','w'))
+    return redirect("/updateProfList")
 
 @app.route('/purgeSchedule',methods=['POST'])
 def purgeSchedule():
@@ -272,9 +364,51 @@ def addGoogleSched():
     data = request.form
     start = str(data['starting'][5:])
     end = str(data['ending'][5:])
-    print start, end
+    #print start, end
     createSchedule(start,end)
     return redirect("https://calendar.google.com")
 
+def beginReportTimer():
+    today = datetime.now()
+    future_may = datetime(today.year, 2, 8, 17, 30, 0)
+    future_dec = datetime(today.year, 2, 8, 15, 33, 0)
+    diff_may = abs(today - future_may).total_seconds()
+    diff_dec = abs(today - future_dec).total_seconds()
+    if diff_may < diff_dec:
+        t = Timer(diff_may, timerHandler)
+    else:
+        t = Timer(diff_dec, timerHandler)
+    l.error('Starting TIMER')
+    print "Starting"
+    t.start()
+
+def date_from_file_string(file_string):
+    return file_string[:file_string.find('.')]
+
+def generateReport():
+    to_write = 'Report:\n\r\n\r'
+    for root, dirs, files in os.walk(baseURL + 'demorequests'):
+        for d in dirs:
+            for root2, dirs2, files2 in os.walk(os.path.join(baseURL, 'demorequests',  d)):
+                for f in files2:
+                    end = f.find('.')
+                    demo_date = datetime.strptime(f[:end],'%Y-%m-%d')
+                    with open(os.path.join(root2,f)) as f1:
+                        to_write += str(demo_date.date()) + '\n\r'
+                        for row in f1:
+                            to_write += '-' + row + '\n\r'
+                        to_write += '\n\r'
+    with open(os.path.join(baseURL,'demorequests','report.csv'),'w') as f:
+        f.write(to_write)
+    return
+                    
+def timerHandler():
+    print "Starting time handler"
+    email = mail.Email()
+    msg = email.create_attachment_message('demorequests/report.csv')
+    email.SendMessage(msg)
+    beginReportTimer()
+    
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8888)
+    #beginReportTimer()
+    app.run(host='0.0.0.0',port=8080)

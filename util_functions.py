@@ -79,7 +79,7 @@ def extractDemo(data):
     """
     Returns the demo requested
     """
-    end = data.find('- Physics Department')
+    end = data.find('Physics')
     return data[:end]
 
 def extractProf(data):

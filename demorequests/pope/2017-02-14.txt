@@ -1,0 +1,4 @@
+
+- 3B40.10: Doppler Effect
+- 6F10.55: Absorption Spectra
+- 6B40.10: Light on a Variac (Black body radiation) - 

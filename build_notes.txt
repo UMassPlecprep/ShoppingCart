@@ -1,0 +1,15 @@
+**Initial recording**
+Date: 2/22/2017
+Version: 1.0.0
+Notes: 
+- Professors can request demos
+- Chris can update server via /updateProfList
+- Testing env and production env are now 2 entities
+---> Each has their own nginx instance controlling them and 'server' function (server = production, server1 = testing)
+Issues: 
+- [FIXED] Responsive Theme on WP site updated, removed calendar JS and CSS files (copied new files over to wp-content folder)
+- Buid script updated; server runs correctly after running build.sh
+***End Initial recording***
+
+**Update**
+Date: 

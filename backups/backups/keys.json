@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "plecprep-calendar",
+  "private_key_id": "0845890e1a029d13c94c176385e158f57cbb7de7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC5q2j9Arcawu20\nCnXiF2XZ8bDhepfo8MKYW1noZfgdzvP8a97hmhHlMGqc+m5dyydM0R0JqKPmsH1a\nZFW5S9Ak8YSbGu8g4TJ2/1Fb+mLG1xMWZm/OIi7IR4b9BiPpC0SvQNOD/uYHskQi\nLyTNwe6yMACF51jIh28TEPrG5ROJuTZXBhF5OZdpr/7wZxGCu/AJ5LLlWjN9PswC\ncnj/rjPV7TDP6vMJMARdiYYfpPuKjUsuTjdzcVnDX8ndNS3IrnAFAmRyaN4u5xdE\nBBYUuTKXTNkga9FdOG/wmx/gYu0YwZbKLzviokUmH7bsI/ccpT6OJR0l55YBgmZH\nCeOpMiZjAgMBAAECgf9+MgMp9K5/gf4OYQ2+niib+ao/lxOpP/sDkxOI4cXCfOdY\nqfjTXeTL4hyUlaJuHaaYj4ktB3JfWZXZ2lhpmR3f/kgjJCtkLawfNWoXGhgJDiXr\nE7TqZlFlzzfwwjumKgKFG4qoLJgsov2sPl7FewrCEd5JJPUzVtooG2JXzVt6Pz8h\n8iyi019o7mUtOKV8wsqreBkJC2ctMn6jUDa63aj+rUHbQWNQ7kZhgRtnB0CsiBQS\neXsAa4toVxrwYloxMXLxtMBSN3U0ycXcAHB2ZLRgm6xN2ZGb/GOpt2FSwJjTAwVE\nu/QLPLrcDc5JI1K2NuJpykNSx/9VqJOh/6/5IhECgYEA7m2mJlhz60AnM9g7CYv/\nBVNNa0HEE2aR1CIRXNGKZ9kcBmfUZzj4fUxHbID7iUufiiN0sU4vC9W+kVNj4t96\nfMbArcw+Lt6Oj9JyDXMK1hQMD+z8j9qPFEOYW8/80fRJeraVkTiyaDURkJQ+9cVc\nJFJuYgGfDyYwWUetMEyz29cCgYEAx1pg8Cgg4Mf71rSwtIfLOA57qvFaoTwLnOaL\n/rD3FcF4hNcmXtWiD2++cI/ABc9uHlCoKMFb+8p9J/GOqDlR50Vih4dRQ0oZS6Ps\n0ApjFMIOsFGPz4wk8kLsoiqvyV/lNiWdwQ8shIX4krecBIEpVCkQ9Fqnr+G2Oi2Y\njSZSGFUCgYBQuLbDzLaSMwoSt2ZleQxCFU3kvkNP/i3pEA+oyRh+yDaAxK5YtCUM\n5sJXreN7PCsrbY2YacvrydXXBdCPgvHJRND/BmMXIypI7wrGGujUSb07txRa77f5\nOFlg3C3QN1CZRy+kFvnv5eeod0hJlSP4+B9+9uWPD3LXBzlPXOiXyQKBgDjfjvJU\n8HRQeYeaiyMl7pMyhpORQcLoB4QevefOgt9hD8oOO3MozZBL1+/zAtxlfkwFxMPD\nzkM6VJR1tLZHjBdH00FJGKTy2d6biK8dl4DPkDM7QaT7nXrEHxBwzy/LPPBCsQvo\nEVJJik4JNeiPFMRe5uhfiKGD6mIUqgXy3c71AoGBAKo9VvhXPt/Rt7/nIUGKDbx5\nHmcF3Zmt4kZEwv/2XV7dvFmw++uMrdpF9Sx5s37ZXfbyV12MJbAefLAzriRzW5Gx\nhxJxU7dWEs0BGe5vlLR9RcI3bKMjvEwrDFfIkQ7YJ/yFila5CU+LU877Eecya4zN\nfApqeaOI3jrprRCTcseB\n-----END PRIVATE KEY-----\n",
+  "client_email": "plecprepservice@plecprep-calendar.iam.gserviceaccount.com",
+  "client_id": "101088468802842711410",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/plecprepservice%40plecprep-calendar.iam.gserviceaccount.com"
+}

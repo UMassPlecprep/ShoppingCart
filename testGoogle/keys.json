@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "eternal-courage-156017",
+  "private_key_id": "7f8c34e673261e0f54145422cc55c1cd23310aec",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCoWAPjhmzrJkJs\nBMSEu8WHBS5pgv2fTi+mtWnDIwkVlXtIv3VxLXP/G1NN+/ix7wmoXwEOcXW5eA6M\nX4/rB0yo+rV8cjl/r7eOoXYKg+cZSGcKgifhG8GwUg+QYLlmGbGfo9dYf4DMx9LO\nZwVsf/3urMszMlI20GQHw8D9O7Bak9Xvum14JXw3VTC06+5PeoDuvlEvFQKZ1G1g\nQIOeTaGjRdeCLPu/se5KNDyqFhSlXZwn5SXRtIQFmkCae45lhi3CqGY+Z+ogsivf\nspLw2TkN/qn50hnKsDDb6/ofYX9ccnESJWzK9PpaNTIdlpxDa7vIJMmHsYVLlh92\nBbf30Dd/AgMBAAECggEAbvo29hN0UkDSoOszsl0nBq+/vQcBs7eTak9F/cJnBreY\nooi1H3tbcN3OuSZW+NYgg8K9q4vYlAA1dwy4j7QsMWm1ouiaRzbLx1dhveTewKge\nZasQJzJpKZevcvqQvmJJ2nfkSw8jFdzVeAQqazClcmavPnz5/fC7QPMnksl6pPqm\n4WxPYSUHpdS4ol9U0szKHrw1MyKSTG1AHC4IL1Lw4R1xrlCC4Nn/utRGOdec15RY\n9KDT7Y9OPmFUAE40vSNgLCpWkT4VkWI9L9jb8zFETi7Y54QZiK7lmW9e5pMU9hhL\nttDRUNMT4vvy6XaL4/US6eNFiFjjr5JKD1a+LqoagQKBgQDRhFGUome9JpVNtpSY\n7NOtI31Oskkj2O3rq+rbFTjQpbp1NBoGSlt+IoZ1CLiJGseXeyITjgiGrkIzPHeP\nm3mSD5KET6tbjricGiIx0J1CLo9L4cP9MO1IIpFcQrBzsE7j4pdoucsFakzLpszY\ntULXyje+qc5mehJfX0qwav9irwKBgQDNsT0vH53KwcwyZiFYpL7g/57YKRWAkdT2\n4E/ZbHR/hypVXYnEdZHIgmJtLD7P4Kmv9bp24wWI+wFiqMfhzmLNhdkekEIrW92O\nDYiJEAn1Bv90Ve8OeErS3okwKPOH9MbL+fBUNz/4pWQohgsTxSQ6Y9pqn4OgdoNK\nVH3xEpvsMQKBgEAMFOw84T1/R/DjuXUuIF8zFCE0ewtMSx7aBQdH64BMyTz+2l3F\n6UYbw8KPEepHl3AFIhucNZsGNhJ3j40E2BsAS6fKuvVYIbMGgiF8RjZvCTsHHuSN\nSlvcxVbQxCP5Z4ReRi6rbRaQsj0nFkPA1Vgl5viP7BqDgo5JEQnxC3TdAoGBAMIv\ntJJ7Z61WXl+qOYsFJUsnKB/sUWdqxcI4LEoYcLdAtP+Yagq17+Z66U8l+TqpX6lF\n9D5uvvf99+Xbb7DG9lIPLdYD3OQwOy7zqdWz9aKEc8CxrBleCU2gV6XG03qj5NYG\n5ROsgVFNWwxC18xXTodtY3NLmqlvmS0gLTHdHqTRAoGBAKYIKt8QbUO+E0zGgh2I\n+tUyA5woM9kvuTdUMnrELSf95yMvluTVFVTR78X42qyAtNq4biPp+Dd1sl64sIxC\ny+5b2meN22kO3Xlu5DeQGIZj8K2GTg2UQ9ogAes+DbRAxOifS1fuHoHKSPZGqhxX\nPXUf6FERiYB/7c3pb0vJJgpr\n-----END PRIVATE KEY-----\n",
+  "client_email": "plecprep-gmail@eternal-courage-156017.iam.gserviceaccount.com",
+  "client_id": "117479644571444066513",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/plecprep-gmail%40eternal-courage-156017.iam.gserviceaccount.com"
+}
